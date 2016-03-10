@@ -40,7 +40,7 @@ var planeWithtux = "tuxplane.svg"
 var planeWithouttux = "tuxwithoutplane.svg"
 var tuxImageStatus = 1
 var tuxfallingblock = false
-var velocityY = [20,30,40,50]
+var velocityY = [20, 30, 40, 50]
 var velocityX = 18
 var random
 
@@ -87,7 +87,7 @@ function onLose() {
     items.animationboat.stop()
     items.tuxX.stop()
     items.bonus.bad("lion")
-    items.tux.x = -items.helimotion.width
+    items.tux.x = -items.helicopter.width
     items.tux.y = 0
     tuxImageStatus = 0
     items.tuximage.visible = false
@@ -113,7 +113,7 @@ function onWin() {
     Oneclick = false
     pressed = false
     items.bonus.good("lion");
-    items.tux.x = -items.helimotion.width
+    items.tux.x = -items.helicopter.width
     items.tux.y = 0
     items.ok.visible = true
     items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
@@ -151,7 +151,7 @@ function onreset() {
     Oneclick = false
     pressed = false
     loseflag = true
-    items.tux.x = -items.helimotion.width
+    items.tux.x = -items.helicopter.width
     items.tux.y = 0
     items.loop.restart()
     items.tuxX.restart()
