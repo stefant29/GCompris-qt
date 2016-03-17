@@ -39,8 +39,9 @@ var parachutetux = "parachute.svg"
 var planeWithtux = "tuxplane.svg"
 var planeWithouttux = "tuxwithoutplane.svg"
 var tuxImageStatus = 1
+var flagoutboundry = 0
 var tuxfallingblock = false
-var velocityY = [20, 30, 40, 50]
+var velocityY = [80, 90, 90, 90]
 var velocityX = 18
 var random
 
@@ -70,9 +71,11 @@ function initLevel() {
     items.helicopter.source = "qrc:/gcompris/src/activities/parachute/resource/" +  planeWithtux
     items.helicopter.visible = true
     tuxImageStatus = 0
+    flagoutboundry = 0
     items.tux.state = "rest"
     items.random = Math.random();
     items.tux.y = 0
+    items.tux.x = 0
     tuxfallingblock = false
     items.ok.visible = false
     items.loop.restart()
@@ -138,7 +141,7 @@ function previousLevel() {
 
 
 function onreset() {
-    items.loop.stop()
+    items.loop.stop();
     items.loopcloud.stop()
     items.animationboat.stop()
     items.tuxX.stop()

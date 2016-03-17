@@ -115,6 +115,7 @@ ActivityBase {
             source: activity.dataSetUrl + "foreground.svg"
             anchors.bottom: parent.bottom
             sourceSize.width: parent.width
+
         }
 
         GCText {
@@ -128,7 +129,7 @@ ActivityBase {
 
         Image {
             id: helicopter
-            source: tux.state != "Released" ? activity.dataSetUrl + "tuxplane.svg" : activity.dataSetUrl + Activity.planeWithouttux
+            source:activity.dataSetUrl + "tuxplane.svg"
             property variant size_levels: [6, 4, 11, 7]
             sourceSize.width: background.width / size_levels[bar.level]
             sourceSize.height: background.height / size_levels[bar.level]
@@ -141,8 +142,10 @@ ActivityBase {
                         tuximage.visible = true
                         tux.y = helicopter.y
                         tuxX.stop()
+                        helicopter.source = activity.dataSetUrl + Activity.planeWithouttux
                         /*     activity.audioEffects.play(activity.dataSetUrl+"youcannot.wav");
                             sound file is not supporting in linux please do remove it before the merge */
+                        Activity.flagoutboundry = 1
                         Activity.tuxImageStatus = 1
                         Activity.Oneclick = true;
                         velocityX = Activity.velocityX
@@ -197,6 +200,9 @@ ActivityBase {
                 id: tuximage
                 source: activity.dataSetUrl + Activity.minitux
                 visible: false
+                property variant size_levels: [8, 8, 9, 7]
+                sourceSize.width: background.width / size_levels[bar.level]
+                sourceSize.height: background.height / size_levels[bar.level]
                 MouseArea {
                     id: tuxmouse
                     anchors.fill: parent
@@ -248,6 +254,7 @@ ActivityBase {
                 else if((tux.y>background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))){
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
+
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
                     Activity.onLose()
@@ -255,6 +262,18 @@ ActivityBase {
                 }
 
             }
+            onXChanged: {
+                if( Activity.flagoutboundry === 1) {
+
+                    if( tux.x < 0) {
+                          tux.x = background.width-2*tux.width
+
+                    } else if(tux.x>(background.width)) {
+                          tux.x = tux.width
+                    }
+                }
+            }
+
 
             SequentialAnimation {
                 id: tuxX
@@ -328,6 +347,7 @@ ActivityBase {
                 SmoothedAnimation { velocity: Activity.velocityX  }
             }
             Behavior on y {
+                id:soomthvelocityy
                 SmoothedAnimation { velocity: Activity.velocityY[bar.level-1] }
             }
 
@@ -399,15 +419,18 @@ ActivityBase {
             id: cloudmotion
             width: cloud.width
             height: height.height
+
             Image {
                 id: cloud
                 source: activity.dataSetUrl + "cloud.svg"
                 y: background.height/7
+                property variant size_levels: [8, 9, 9.6, 10]
+                sourceSize.width: background.width / size_levels[bar.level]
+                sourceSize.height: background.height / size_levels[bar.level]
             }
             SequentialAnimation {
                 id:loopcloud
                 loops: Animation.Infinite
-
                 PropertyAnimation {
                     id: animationcloud
                     target: cloudmotion
@@ -423,51 +446,52 @@ ActivityBase {
         Item{
             id:boatmotion
             Image {
-            id: boat
-            source: activity.dataSetUrl + "fishingboat.svg"
-            y: (bar.level === 1 ? background.height/1.4 : bar.level==2 ? background.height/1.4 : bar.level ===3 ? background.height/1.4:bar.level === 4?background.height/1.4:background.height/1.3 )
-            sourceSize.width: (bar.level === 1 ? background.width/4 : bar.level==2 ? background.width/4.5 : bar.level ===3 ? background.width/5:bar.level === 4?background.width/5.1:background.width/5.1 )
-            sourceSize.height: background.height/4
+                id: boat
+                property variant widthboat:[4,4.5,5,3]
+                source: activity.dataSetUrl + "fishingboat.svg"
+                y: background.height/1.3
+                sourceSize.width: background.width/widthboat[bar.level-1]
+                sourceSize.height: background.height/4
 
-            PropertyAnimation {
-                id: animationboat
-                target: boat
-                properties: "x"
-                from: -boat.width
-                to: background.width * 0.5
-                duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ? 17000 : 9000)
-                easing.type: Easing.Linear
-                onRunningChanged: {
-                    boat.x = Qt.binding(function() { return animationboat.to })
-                    if(boat.x < animationboat.to ){
-                         boatmotion.state = "yless"
-                    }
-                    else {
-                         boatmotion.state = "normal"
+                PropertyAnimation {
+                    id: animationboat
+                    target: boat
+                    properties: "x"
+                    from: -boat.width
+                    to: background.width * 0.5
+                    duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ? 17000 : 9000)
+                    easing.type: Easing.Linear
+                    onRunningChanged: {
+                        boat.x = Qt.binding(function() { return animationboat.to })
+                        if(boat.x < animationboat.to ){
+                            boatmotion.state = "yless"
+                        }
+                        else {
+                            boatmotion.state = "normal"
+                        }
                     }
                 }
+
+
             }
+            states:[
+                State {
+                    name: "yless"
+                    PropertyChanges {
+                        target:boat
+                        y:boat.y-0.1
+                    }
+                },
+                State {
+                    name: "normal"
+                    PropertyChanges {
+                        target:boat
 
 
+                    }
+                }
+            ]
         }
-        states:[
-            State {
-                name: "yless"
-                PropertyChanges {
-                    target:boat
-                    y:boat.y-0.01
-                }
-            },
-            State {
-                name: "normal"
-                PropertyChanges {
-                    target:boat
-                    y:boat.y
-
-                }
-            }
-         ]
-       }
 
         DialogHelp {
             id: dialogHelp
