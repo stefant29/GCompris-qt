@@ -40,6 +40,7 @@ var planeWithtux = "tuxplane.svg"
 var planeWithouttux = "tuxwithoutplane.svg"
 var tuxImageStatus = 1
 var flagoutboundry = 0
+var flaginboundry = 0
 var tuxfallingblock = false
 var velocityY = [80, 90, 90, 90]
 var velocityX = 18
@@ -72,6 +73,7 @@ function initLevel() {
     items.helicopter.visible = true
     tuxImageStatus = 0
     flagoutboundry = 0
+    flaginboundry  = 0
     items.tux.state = "rest"
     items.random = Math.random();
     items.tux.y = 0

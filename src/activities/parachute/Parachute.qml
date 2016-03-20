@@ -147,6 +147,7 @@ ActivityBase {
                             sound file is not supporting in linux please do remove it before the merge */
                         Activity.flagoutboundry = 1
                         Activity.tuxImageStatus = 1
+                        Activity.flaginboundry  = 1
                         Activity.Oneclick = true;
                         velocityX = Activity.velocityX
                         velocityY = (items.bar.level === 1 ? 30 : items.bar.level === 2 ? 40 : items.bar.level === 3 ? 55 : items.bar.level === 4 ? 80 : 12 )
@@ -254,7 +255,6 @@ ActivityBase {
                 else if((tux.y>background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))){
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
-
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
                     Activity.onLose()
@@ -262,16 +262,49 @@ ActivityBase {
                 }
 
             }
+
             onXChanged: {
-                if( Activity.flagoutboundry === 1) {
+                if(( Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1||Activity.flagoutboundry)) {
 
-                    if( tux.x < 0) {
-                          tux.x = background.width-2*tux.width
-
-                    } else if(tux.x>(background.width)) {
-                          tux.x = tux.width
+                    if(tux.x > (background.width-tux.width/2)&&(Activity.flagoutboundry!=2)) {
+                        Activity.flagoutboundry = 2
+                        tux.state = "backedge"
+                        velocityX = 500
+                        tux.state = "relaxatintal"
                     }
+
+
+                    if((Activity.flagoutboundry === 2)&&(tux.x <(tux.width/2))) {
+                        Activity.flagoutboundry = 1
+                        tux.visible = true;
+                        velocityX = Activity.velocityX
+                        if(Activity.tuxImageStatus ===1) {
+                            tux.state="Released"
+                        }  else if(Activity.tuxImageStatus === 2) {
+                            tux.state="Released1"
+                        }
+                    }
+
+                    if((tux.x < 0&&Activity.flagoutboundry!=2&&Activity.flaginboundry!=2)) {
+                        Activity.flaginboundry = 2
+                        tux.state = "initaledge"
+                        velocityX = 500
+                        tux.state = "relaxatback"
+                    }
+
+                    if((Activity.flaginboundry === 2) && (tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)) {
+                        Activity.flaginboundry = 1;
+                        tux.visible = true;
+                        velocityX = Activity.velocityX
+                        if(Activity.tuxImageStatus ===1) {
+                            tux.state = "Released"
+                        } else if(Activity.tuxImageStatus === 2) {
+                            tux.state = "Released1"
+                        }
+                    }
+
                 }
+
             }
 
 
@@ -339,8 +372,64 @@ ActivityBase {
                     PropertyChanges {
                         target: tux
                     }
+                },
+
+                State {
+                    name:"backedge"
+                    PropertyChanges {
+                        target: tux
+                        visible:false
+                        y:tux.y
+                        x:tux.x-10
+                    }
+                },
+
+                State {
+                    name: "relaxatintal"
+                    PropertyChanges {
+                        target: tux
+                        visible:false
+                        y:tux.y
+                        x:tux.width/3
+                    }
+                },
+
+                State {
+                    name: "initaledge"
+                    PropertyChanges {
+                        target: tux
+                        visible:false
+                        y:tux.y
+                        x:tux.x-10
+                    }
+                },
+
+                State {
+                    name: "relaxatback"
+                    PropertyChanges {
+                        target: tux
+                        visible:false
+                        y:tux.y
+                        x:background.width-(tux.width/2)
+                    }
                 }
 
+
+            ]
+
+            transitions: [
+                Transition {
+                    from: "backedge"
+                    to: "relaxatintal"
+                    NumberAnimation { properties:"x"; duration:10   }
+
+                },
+                Transition {
+                    from: "initaledge"
+                    to: "relaxatback"
+                    NumberAnimation { properties:"x"; duration:10   }
+
+                }
             ]
 
             Behavior on x {
@@ -355,11 +444,11 @@ ActivityBase {
         }
 
         Keys.onReleased: {
-            if(Activity.tuxImageStatus === 1) {
+            if(Activity.tuxImageStatus === 1 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 velocityY = Activity.velocityY[bar.level-1]
                 tux.state = "Released"
 
-            }else if(Activity.tuxImageStatus === 2) {
+            } else if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 velocityY = Activity.velocityY[bar.level-1]
                 tux.state = "Released1"
             }
@@ -367,51 +456,56 @@ ActivityBase {
         }
 
         Keys.onUpPressed: {
-            if(Activity.tuxImageStatus === 2) {
+            if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry !=2 && Activity.flaginboundry != 2) {
                 tux.state = "UpPressed"
                 velocityY = velocityY/2
             }
         }
 
         Keys.onDownPressed: {
-            if(Activity.tuxImageStatus === 2) {
+
+            if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 tux.state = "DownPressed"
                 velocityY = velocityY*0.2
                 items.downstep = items.downstep + 0.02
             }
 
+
         }
 
-        MultiPointTouchArea{
+        MultiPointTouchArea {
             id:touch
             anchors.fill:parent
             enabled:false
             touchPoints: [ TouchPoint { id: point1 } ]
             onPressed:  {
-                if(Activity.tuxImageStatus === 2) {
-                    if(point1.y < tux.y ) {
-                        tux.state = "UpPressed"
-                        velocityY = velocityY/2
-                    }
-                    else {
-                        tux.state = "DownPressed"
-                        velocityY = velocityY*0.8
-                        items.downstep = items.downstep + 0.8
+                if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
+                    if(Activity.tuxImageStatus === 2) {
+                        if(point1.y < tux.y ) {
+                            tux.state = "UpPressed"
+                            velocityY = velocityY/2
+                        }
+                        else {
+                            tux.state = "DownPressed"
+                            velocityY = velocityY*0.8
+                            items.downstep = items.downstep + 0.8
+                        }
                     }
                 }
 
             }
             onReleased: {
-                if(Activity.tuxImageStatus === 1) {
-                    velocityY = Activity.velocityY[bar.level-1]
-                    tux.state = "Released"
+                if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
+                    if(Activity.tuxImageStatus === 1) {
+                        velocityY = Activity.velocityY[bar.level-1]
+                        tux.state = "Released"
 
-                } else if(Activity.tuxImageStatus === 2) {
-                    velocityY = Activity.velocityY[bar.level-1]
-                    tux.state = "Released1"
+                    } else if(Activity.tuxImageStatus === 2) {
+                        velocityY = Activity.velocityY[bar.level-1]
+                        tux.state = "Released1"
+                    }
+
                 }
-
-
             }
         }
 
