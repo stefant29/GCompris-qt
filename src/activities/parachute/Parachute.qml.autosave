@@ -562,7 +562,7 @@ ActivityBase {
                     duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ? 17000 : 9000)
                     easing.type: Easing.Linear
                     onRunningChanged: {
-                        //boat.x = Qt.binding(function() { return animationboat.to })
+                        boat.x = Qt.binding(function() { return animationboat.to })
                         if(boat.x < animationboat.to ){
                             boatmotion.state = "yless"
                         }
