@@ -264,15 +264,16 @@ ActivityBase {
             }
 
             onXChanged: {
-                if(tux.state==="UpPressed"||tux.state==="DownPressed"||tux.state==="Released"||tux.state==="Released1"){
+                if(tux.state==="UpPressed"||tux.state==="DownPressed"||tux.state==="Released"||tux.state==="Released1") {
                     Activity.edgeflag =1;
-                }else {
+                } else {
                     Activity.edgeflag = -1;
                 }
 
                 if(( Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1||Activity.flagoutboundry)) {
 
                     if(tux.x > (background.width-tux.width/2)&&(Activity.flagoutboundry!=2)&&(Activity.edgeflag===1)) {
+                        console.log("happy")
                         Activity.flagoutboundry = 2
                         tux.state = "backedge"
                         velocityX = 500
@@ -280,7 +281,8 @@ ActivityBase {
                     }
 
 
-                    if((Activity.flagoutboundry === 2)&&(tux.x <(tux.width/2))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
+                    if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
+                        console.log("sad")
                         Activity.flagoutboundry = 1
                         tux.visible = true;
                         velocityX = Activity.velocityX
@@ -346,6 +348,7 @@ ActivityBase {
                     }
 
                 },
+
                 State {
                     name: "DownPressed"
                     PropertyChanges {
@@ -354,6 +357,7 @@ ActivityBase {
                         x:(tux.x + Activity.xsteps())
                     }
                 },
+
                 State {
                     name: "Released"
                     PropertyChanges {
@@ -363,12 +367,13 @@ ActivityBase {
                     }
 
                 },
+
                 State{
                     name:"Released1"
                     PropertyChanges {
                         target: tux
                         y:(tux.y + Activity.steps1())
-                        x:(tux.x + Activity.xsteps() )
+                        x:(tux.x + Activity.xsteps())
                     }
 
                 },
@@ -561,15 +566,15 @@ ActivityBase {
                     to: background.width * 0.5
                     duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ? 17000 : 9000)
                     easing.type: Easing.Linear
-                    onRunningChanged: {
-                        //boat.x = Qt.binding(function() { return animationboat.to })
+                    /*onRunningChanged: {
+                        boat.x = Qt.binding(function() { return boat.x })
                         if(boat.x < animationboat.to ){
                             boatmotion.state = "yless"
                         }
                         else {
                             boatmotion.state = "normal"
                         }
-                    }
+                    }*/
                 }
 
 
