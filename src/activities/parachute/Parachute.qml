@@ -282,7 +282,7 @@ ActivityBase {
 
 
                     if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
-                        console.log("sad")
+
                         Activity.flagoutboundry = 1
                         tux.visible = true;
                         velocityX = Activity.velocityX
