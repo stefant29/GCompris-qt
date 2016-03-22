@@ -281,17 +281,7 @@ ActivityBase {
                     }
 
 
-                    if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
 
-                        Activity.flagoutboundry = 1
-                        tux.visible = true;
-                        velocityX = Activity.velocityX
-                        if(Activity.tuxImageStatus ===1) {
-                            tux.state="Released"
-                        }  else if(Activity.tuxImageStatus === 2) {
-                            tux.state="Released1"
-                        }
-                    }
 
                     if((tux.x < 0&&Activity.flagoutboundry!=2&&Activity.flaginboundry!=2)&&(Activity.edgeflag===1)) {
                         Activity.flaginboundry = 2
@@ -300,16 +290,7 @@ ActivityBase {
                         tux.state = "relaxatback"
                     }
 
-                    if((Activity.flaginboundry === 2) && (tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
-                        Activity.flaginboundry = 1;
-                        tux.visible = true;
-                        velocityX = Activity.velocityX
-                        if(Activity.tuxImageStatus ===1) {
-                            tux.state = "Released"
-                        } else if(Activity.tuxImageStatus === 2) {
-                            tux.state = "Released1"
-                        }
-                    }
+
 
                 }
 
@@ -433,12 +414,40 @@ ActivityBase {
                     from: "backedge"
                     to: "relaxatintal"
                     NumberAnimation { properties:"x"; duration:10   }
+                    onRunningChanged: {
+
+                        if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
+
+                            Activity.flagoutboundry = 1
+                            tux.visible = true;
+                            velocityX = Activity.velocityX
+                            if(Activity.tuxImageStatus ===1) {
+                                tux.state="Released"
+                            }  else if(Activity.tuxImageStatus === 2) {
+                                tux.state="Released1"
+                            }
+                        }
+
+                    }
 
                 },
                 Transition {
                     from: "initaledge"
                     to: "relaxatback"
                     NumberAnimation { properties:"x"; duration:10   }
+                    onRunningChanged: {
+                        if((Activity.flaginboundry === 2) && (tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
+                            Activity.flaginboundry = 1;
+                            tux.visible = true;
+                            velocityX = Activity.velocityX
+                            if(Activity.tuxImageStatus ===1) {
+                                tux.state = "Released"
+                            } else if(Activity.tuxImageStatus === 2) {
+                                tux.state = "Released1"
+                            }
+                        }
+
+                    }
 
                 }
             ]
