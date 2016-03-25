@@ -22,21 +22,53 @@
 import QtQuick 2.0
 
 QtObject {
-    property string instruction: qsTr("Arrange the objects in increasing order of their Real-life sizes.")
-    property variant levels : [
+    property string questionText: qsTr("Drag and Drop the shapes to according to their properties.")
+    property variant dropBox : [
         {
-            "pixmapfile": "img/car.png",
-            "x": "0.67",
-            "y": "0.5",
-            "height": "0.4",
-            "width": "0.4"
+            "name": "Cuboid",
+            "value": "0"
         },
         {
-            "pixmapfile": "img/bicycle.png",
-            "x": "0.33",
-            "y": "0.5",
-            "height": "0.4",
-            "width": "0.4"
+            "name": "Triangle",
+            "value": "1"
+        }
+    ]
+    property variant tab : [
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/triangle.png",
+            "value": "1",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/cuboid.png",
+            "value": "0",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/cuboid.png",
+            "value": "0",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/triangle.png",
+            "value": "1",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/triangle.png",
+            "value": "1",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/cuboid.png",
+            "value": "0",
+            "height": "0.1",
+            "width": "0.1"
         }
     ]
 }

@@ -22,21 +22,41 @@
 import QtQuick 2.0
 
 QtObject {
-    property string instruction: qsTr("Arrange the triangle in increasing order of their Areas.")
-    property variant levels : [
+    property string questionText: qsTr("Drag and Drop the shapes to according to their properties.")
+    property variant dropBox : [
         {
-            "pixmapfile": "img/greenTriangle.png",
-            "x": "0.67",
-            "y": "0.5",
-            "height": "0.4",
-            "width": "0.4"
+            "name": "Circle",
+            "value": "0"
         },
         {
-            "pixmapfile": "img/greenTriangleSmall.png",
-            "x": "0.33",
-            "y": "0.5",
-            "height": "0.4",
-            "width": "0.4"
+            "name": "Rectangle",
+            "value": "1"
+        }
+    ]
+    property variant tab : [
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/rectangle.png",
+            "value": "1",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/circle.png",
+            "value": "0",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/rectangle.png",
+            "value": "1",
+            "height": "0.1",
+            "width": "0.1"
+        },
+        {
+            "source": "qrc:/gcompris/src/activities/object_classification/resource/img/circle.png",
+            "value": "0",
+            "height": "0.1",
+            "width": "0.1"
         }
     ]
 }

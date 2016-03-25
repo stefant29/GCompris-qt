@@ -1,4 +1,4 @@
-/* GCompris - ActivityInfo.qml
+/* GCompris - DropTile.qml
  *
  * Copyright (C) 2016 Ayush Agrawal <ayushagrawal288@gmail.com>
  *
@@ -18,20 +18,38 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+import QtQuick 2.1
 import GCompris 1.0
 
-ActivityInfo {
-  name: "object_classification/Object_classification.qml"
-  difficulty: 1
-  icon: "object_classification/object_classification.png"
-  author: "Ayush Agrawal &lt;ayushagrawal288@gmail.com&gt;"
-  demo: true
-  title: qsTr("Object Classification")
-  description: qsTr("")
-  //intro: "put here in comment the text for the intro voice"
-  goal: qsTr("")
-  prerequisite: qsTr("")
-  manual: qsTr("")
-  credit: ""
-  section: "fun"
+import "object_classification.js" as Activity
+
+DropArea {
+    id: dragTarget
+
+    property var key
+    property alias dropProxy: dragTarget
+    property int widthDropArea
+    property int heightDropArea
+
+    width: widthDropArea
+    height: heightDropArea
+    keys: [ key ]
+
+    Rectangle{
+        anchors.fill: parent
+        color: "transparent"
+
+        Image {
+            id: dropRectangle
+            anchors.fill: parent
+            states: [
+                State {
+                    when: dragTarget.dropped
+                    PropertyChanges {
+                        target: dropRectangle
+                    }
+                }
+            ]
+        }
+    }
 }

@@ -1,6 +1,6 @@
 /* GCompris - object_classification.js
  *
- * Copyright (C) 2015 Ayush Agrawal <ayushagrawal288@gmail.com>
+ * Copyright (C) 2016 Ayush Agrawal <ayushagrawal288@gmail.com>
  *
  * Authors:
  *   Ayush Agrawal <ayushagrawal288@gmail.com>
@@ -39,15 +39,11 @@ function stop() {
 }
 
 function initLevel() {
-//    items.questionPanel.clear();
-//    items.answerPanel.clear();
     items.bar.level = currentLevel
     var filename = url + "board" + "/" + "board" + currentLevel + "_0.qml"
     items.dataset.source = filename
     items.score.currentSubLevel = 0
     items.score.numberOfSubLevels = items.dataset.item.tab.length
-//    items.questionPanel.model = items.dataset.item.length;
-//    items.answerPanel.model = items.dataset.item.length;
 }
 
 function nextLevel() {
