@@ -35,6 +35,7 @@ var Oneclick
 var winlose
 var loseflag = false
 var minitux = "minitux.svg"
+var minituxette = "minituxette.svg"
 var parachutetux = "parachute.svg"
 var planeWithtux = "tuxplane.svg"
 var planeWithouttux = "tuxwithoutplane.svg"
@@ -45,7 +46,7 @@ var edgeflag = 0
 var tuxfallingblock = false
 var velocityY = [80, 90, 90, 90]
 var velocityX = 18
-var random
+var random  
 
 function start(items_) {
     items = items_
@@ -63,8 +64,6 @@ function initLevel() {
     if(loseflag == false) {
        items.bar.level = currentLevel + 1
     }
-
-
     checkPressed = false
     winlose = false
     Oneclick = false
@@ -86,6 +85,7 @@ function initLevel() {
     items.tuxX.restart()
     items.loopcloud.restart()
     items.animationboat.restart()
+
 }
 
 function onLose() {

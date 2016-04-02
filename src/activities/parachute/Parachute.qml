@@ -32,6 +32,7 @@ ActivityBase {
 
     property real velocityX
     property real velocityY
+    property real randomize: Math.random()
     
     property string dataSetUrl: "qrc:/gcompris/src/activities/parachute/resource/"
     
@@ -79,6 +80,13 @@ ActivityBase {
             property real  velocityY: velocityY
             property real  random
             property real  downstep
+            property real  randomize: randomize
+            property var   dataset : {
+                        "none": qsTr(""),
+                        "helicopter": qsTr("\n   Click on \n the helicopter \n and let the \n tux jump"),
+                        "Minitux": qsTr("\n  Click on \n the tux open \n the parachute"),
+                        "parachute": qsTr("\n use up \n and down \n arrow key \n to regulate")
+            }
 
         }
 
@@ -130,7 +138,7 @@ ActivityBase {
         Image {
             id: helicopter
             source:activity.dataSetUrl + "tuxplane.svg"
-            property variant size_levels: [6, 5, 11, 7]
+            property variant size_levels: [6, 5, 7, 8]
             sourceSize.width: background.width / size_levels[bar.level]
             sourceSize.height: background.height / size_levels[bar.level]
             MouseArea {
@@ -145,12 +153,17 @@ ActivityBase {
                         helicopter.source = activity.dataSetUrl + Activity.planeWithouttux
                         /*     activity.audioEffects.play(activity.dataSetUrl+"youcannot.wav");
                             sound file is not supporting in linux please do remove it before the merge */
+                        instruction.visible = false
+                        if(bar.level===1){
+                           instructiontwo.visible = true
+                        }
                         Activity.flagoutboundry = 1
                         Activity.tuxImageStatus = 1
                         Activity.flaginboundry  = 1
                         Activity.Oneclick = true;
                         velocityX = Activity.velocityX
-                        velocityY = (items.bar.level === 1 ? 30 : items.bar.level === 2 ? 40 : items.bar.level === 3 ? 55 : items.bar.level === 4 ? 80 : 12 )
+                        velocityY = (items.bar.level === 1 ? 30 : items.bar.level === 2 ? 40 : items.bar.level === 3
+                                                                                          ? 55 : items.bar.level === 4 ? 80 : 12 )
                         tux.state = "Released"
                     }
                 }
@@ -165,7 +178,8 @@ ActivityBase {
                     properties: "x"
                     from: -helicopter.width
                     to: background.width
-                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ? 10000 : 9000)
+                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ?
+                                                                                                         10000 : 9000)
                     easing.type: Easing.Linear
                 }
             }
@@ -179,6 +193,26 @@ ActivityBase {
             }
         }
 
+        Item {
+            id: instruction
+            width: bubble.width
+            height: bubble.height
+            anchors.left:helicopter.right
+            visible:bar.level === 1 ? true:false
+            Image{
+                id: bubble
+                source: activity.dataSetUrl + "shower.svg"
+                width: sourceSize.width
+                height: sourceSize.height
+                GCText {
+                    id: caption
+                    fontSize:tinySize
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text:items.dataset["helicopter"]
+                }
+           }
+        }
+
 
         Item {
             id: tux
@@ -186,20 +220,27 @@ ActivityBase {
             height: tuximage.height
             x: -helicopter.width
             state:"rest"
-            Rectangle {
-                id: tuximagehover
-                width: tuximage.width
-                height: tuximage.height
-                visible: false
-                border.width: 7
-                radius: 20
-                border.color: "#A80000"
-                color: "#500000"
-                opacity: 90
+            Item {
+                id: instructiontwo
+                visible:false
+                anchors.left:tuximage.right
+                Image{
+                    id:bubble2
+                    source:activity.dataSetUrl + "shower.svg"
+                    width:sourceSize.width
+                    height:sourceSize.height
+
+                    GCText{
+                        id:caption2
+                        fontSize:tinySize
+                        anchors.horizontalCenter:parent.horizontalCenter
+                        text:items.dataset["Minitux"]
+                    }
+                }
             }
             Image {
                 id: tuximage
-                source: activity.dataSetUrl + Activity.minitux
+                source:randomize > 0.4 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
                 visible: false
                 property variant size_levels: [6, 7, 6, 7]
                 sourceSize.width: background.width / size_levels[bar.level]
@@ -210,9 +251,7 @@ ActivityBase {
                     hoverEnabled: true
                     onClicked: {
                         if(Activity.tuxImageStatus === 1) {
-                            if(tuximagehover.visible === true) {
-                                tuximagehover.visible = false
-                            }
+                            instructiontwo.visible = false
                             tux.state = "Released1"
                             keyunable.visible = true
                             tuximage.source = activity.dataSetUrl + Activity.parachutetux
@@ -222,14 +261,8 @@ ActivityBase {
 
                         }
                     }
-                    onEntered: {
-                        if(Activity.tuxImageStatus === 1) {
-                            tuximagehover.visible = true
-                        }
-                    }
-                    onExited: {
-                        tuximagehover.visible = false
-                    }
+
+
                 }
             }
 
@@ -280,9 +313,6 @@ ActivityBase {
                         tux.state = "relaxatintal"
                     }
 
-
-
-
                     if((tux.x < 0&&Activity.flagoutboundry!=2&&Activity.flaginboundry!=2)&&(Activity.edgeflag===1)) {
                         Activity.flaginboundry = 2
                         tux.state = "initaledge"
@@ -305,7 +335,8 @@ ActivityBase {
                     properties: "x"
                     from: -helicopter.width
                     to: background.width
-                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ? 10000 : 9000)
+                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ?
+                                                                                                         10000 : 9000)
                 }
             }
 
@@ -436,7 +467,7 @@ ActivityBase {
                     to: "relaxatback"
                     NumberAnimation { properties:"x"; duration:10   }
                     onRunningChanged: {
-                        if((Activity.flaginboundry === 2) && (tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
+                        if((Activity.flaginboundry === 2)&&(tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
                             Activity.flaginboundry = 1;
                             tux.visible = true;
                             velocityX = Activity.velocityX
@@ -551,13 +582,14 @@ ActivityBase {
                     properties: "x"
                     from:items.random > 0.5 ?  background.width : -cloud.width
                     to:animationcloud.from === background.width ? -cloud.width : background.width
-                    duration: (bar.level === 1 ? 19000 : bar.level === 2 ? 15000 : bar.level === 3 ? 11000 : bar.level === 4 ? 9000 : 9000)
+                    duration: (bar.level === 1 ? 14000 : bar.level === 2 ? 15000 : bar.level === 3 ? 11000 : bar.level === 4 ?
+                                                                                                         9000 : 9000)
                     easing.type: Easing.Linear
                 }
             }
         }
 
-        Item{
+        Item {
             id:boatmotion
             Image {
                 id: boat
@@ -573,17 +605,18 @@ ActivityBase {
                     properties: "x"
                     from: -boat.width
                     to: background.width * 0.5
-                    duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ? 17000 : 9000)
+                    duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ?
+                                                                                                         17000 : 9000)
                     easing.type: Easing.Linear
-                    /*onRunningChanged: {
-                        boat.x = Qt.binding(function() { return boat.x })
+                    onRunningChanged: {
+                        boat.x = Qt.binding(function() { return animationboat.to })
                         if(boat.x < animationboat.to ){
                             boatmotion.state = "yless"
                         }
                         else {
                             boatmotion.state = "normal"
                         }
-                    }*/
+                    }
                 }
 
 
