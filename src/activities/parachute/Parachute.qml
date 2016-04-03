@@ -340,6 +340,27 @@ ActivityBase {
                 }
             }
 
+            SequentialAnimation{
+                id:rotations
+                loops:Animation.Infinite
+                running:tux.state === "Released" || tux.state === "UpPressed" || tux.state === "DownPressed"
+                || tux.state === "Released1"
+                PropertyAnimation{
+                    target:tux
+                    property: "rotation"
+                    from: -6; to: 6
+                    duration: 500
+                    easing.type: Easing.InOutQuad
+                }
+                PropertyAnimation{
+                    target:tux
+                    property: "rotation"
+                    from: 6; to: -6
+                    duration: 500
+                    easing.type: Easing.InOutQuad
+                }
+            }
+
             states: [
                 State{
                     name:"rest"
