@@ -64,11 +64,19 @@ function initLevel() {
     if(loseflag == false) {
        items.bar.level = currentLevel + 1
     }
+
+    if(items.bar.level===1) {
+             items.instruction.visible = true
+    }
+    else {
+        items.instruction.visible = false
+    }
+
     checkPressed = false
     winlose = false
     Oneclick = false
     pressed = false
-    loseflag =false
+    loseflag = false
     items.helicopter.source = "qrc:/gcompris/src/activities/parachute/resource/" +  planeWithtux
     items.helicopter.visible = true
     tuxImageStatus = 0
@@ -104,7 +112,6 @@ function onLose() {
     Oneclick = false
     pressed = false
     loseflag = true
-
     initLevel()
 }
 
@@ -113,7 +120,6 @@ function onWin() {
     items.loopcloud.stop()
     items.animationboat.stop()
     items.tuxX.stop()
-
     items.tuximage.visible = false
     checkPressed = false
     winlose = false
@@ -145,12 +151,15 @@ function previousLevel() {
 
 
 function onreset() {
-    items.loop.stop();
+    if(items.bar.level === 1 && tuxImageStatus === 1){
+        items.instructiontwo.visible = false
+    }
+    items.tux.state = "finished"
+    items.loop.stop()
     items.loopcloud.stop()
     items.animationboat.stop()
     items.tuxX.stop()
     tuxImageStatus = 0
-
     items.tuximage.visible = false
     items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
     checkPressed = false
@@ -158,12 +167,9 @@ function onreset() {
     Oneclick = false
     pressed = false
     loseflag = true
+    tuxfallingblock = false
     items.tux.x = -items.helicopter.width
     items.tux.y = 0
-    items.loop.restart()
-    items.tuxX.restart()
-    items.loopcloud.restart()
-    items.animationboat.restart()
     initLevel()
 
 }
@@ -201,6 +207,7 @@ function cloudanimation() {
     return items.random
 
 }
+
 function xsteps(){
    if(items.random < 0.5) {
        return 2;

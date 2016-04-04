@@ -77,6 +77,8 @@ ActivityBase {
             property alias tux: tux
             property alias tuximage: tuximage
             property alias helicopter: helicopter
+            property alias instruction: instruction
+            property alias instructiontwo:instructiontwo
             property real  velocityY: velocityY
             property real  random
             property real  downstep
@@ -154,7 +156,7 @@ ActivityBase {
                         /*     activity.audioEffects.play(activity.dataSetUrl+"youcannot.wav");
                             sound file is not supporting in linux please do remove it before the merge */
                         instruction.visible = false
-                        if(bar.level===1){
+                        if(bar.level===1) {
                            instructiontwo.visible = true
                         }
                         Activity.flagoutboundry = 1
@@ -271,12 +273,15 @@ ActivityBase {
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
                     touch.enabled = false
+                    if(bar.level===1&&Activity.tuxImageStatus===1) {
+                        instructiontwo.visible = false
+                    }
                     Activity.tuxImageStatus = 0
                     Activity.onLose()
                     items.keyunable.visible = false
                 }
 
-                if((tux.y>background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))){
+                if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))){
                     tux.state = "finished"
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
@@ -285,7 +290,7 @@ ActivityBase {
                     items.keyunable.visible = false
                 }
 
-                else if((tux.y>background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))){
+                else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))){
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
                     touch.enabled = false
@@ -306,7 +311,6 @@ ActivityBase {
                 if(( Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1||Activity.flagoutboundry)) {
 
                     if(tux.x > (background.width-tux.width/2)&&(Activity.flagoutboundry!=2)&&(Activity.edgeflag===1)) {
-                        console.log("happy")
                         Activity.flagoutboundry = 2
                         tux.state = "backedge"
                         velocityX = 500
@@ -468,8 +472,8 @@ ActivityBase {
                     NumberAnimation { properties:"x"; duration:10   }
                     onRunningChanged: {
 
-                        if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&(tux.state==="backedge"||tux.state==="relaxatintal")) {
-
+                        if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&
+                                (tux.state==="backedge"||tux.state==="relaxatintal")) {
                             Activity.flagoutboundry = 1
                             tux.visible = true;
                             velocityX = Activity.velocityX
@@ -488,7 +492,8 @@ ActivityBase {
                     to: "relaxatback"
                     NumberAnimation { properties:"x"; duration:10   }
                     onRunningChanged: {
-                        if((Activity.flaginboundry === 2)&&(tux.x > background.width-(tux.width/1.5))&&(Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
+                        if((Activity.flaginboundry === 2)&&(tux.x > background.width-(tux.width/1.5))&&
+                           (Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
                             Activity.flaginboundry = 1;
                             tux.visible = true;
                             velocityX = Activity.velocityX
@@ -604,7 +609,7 @@ ActivityBase {
                     from:items.random > 0.5 ?  background.width : -cloud.width
                     to:animationcloud.from === background.width ? -cloud.width : background.width
                     duration: (bar.level === 1 ? 14000 : bar.level === 2 ? 15000 : bar.level === 3 ? 11000 : bar.level === 4 ?
-                                                                                                         9000 : 9000)
+                    9000 : 9000)
                     easing.type: Easing.Linear
                 }
             }
@@ -619,7 +624,6 @@ ActivityBase {
                 y: background.height/1.3
                 sourceSize.width: background.width/widthboat[bar.level-1]
                 sourceSize.height: background.height/4
-
                 PropertyAnimation {
                     id: animationboat
                     target: boat
@@ -627,7 +631,7 @@ ActivityBase {
                     from: -boat.width
                     to: background.width * 0.5
                     duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ?
-                                                                                                         17000 : 9000)
+                     17000 : 9000)
                     easing.type: Easing.Linear
                     onRunningChanged: {
                         boat.x = Qt.binding(function() { return animationboat.to })
