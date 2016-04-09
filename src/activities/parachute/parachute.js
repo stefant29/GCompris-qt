@@ -25,7 +25,6 @@
 .import GCompris 1.0 as GCompris
 .import "qrc:/gcompris/src/core/core.js" as Core
 
-
 var currentLevel = 0
 var numberOfLevel = 4
 var items
@@ -46,7 +45,6 @@ var edgeflag = 0
 var tuxfallingblock = false
 var velocityY = [80, 90, 90, 90]
 var velocityX = 18
-var random  
 
 function start(items_) {
     items = items_
@@ -66,7 +64,7 @@ function initLevel() {
     }
 
     if(items.bar.level===1) {
-             items.instruction.visible = true
+        items.instruction.visible = true
     }
     else {
         items.instruction.visible = false
@@ -79,9 +77,10 @@ function initLevel() {
     loseflag = false
     items.helicopter.source = "qrc:/gcompris/src/activities/parachute/resource/" +  planeWithtux
     items.helicopter.visible = true
+    items.touch.visible = false
     tuxImageStatus = 0
     flagoutboundry = 0
-    flaginboundry  = 0
+    flaginboundry = 0
     edgeflag = 0
     items.tux.state = "rest"
     items.random = Math.random();
@@ -93,7 +92,6 @@ function initLevel() {
     items.tuxX.restart()
     items.loopcloud.restart()
     items.animationboat.restart()
-
 }
 
 function onLose() {
@@ -136,7 +134,7 @@ function nextLevel() {
     if(numberOfLevel <= ++currentLevel ) {
         currentLevel = 0
     }
-    onreset();
+    onReset();
     initLevel();
 }
 
@@ -144,13 +142,11 @@ function previousLevel() {
     if(--currentLevel < 0) {
         currentLevel = numberOfLevel - 1
     }
-    onreset();
+    onReset();
     initLevel();
 }
 
-
-
-function onreset() {
+function onReset() {
     if(items.bar.level === 1 && tuxImageStatus === 1){
         items.instructiontwo.visible = false
     }
@@ -175,43 +171,31 @@ function onreset() {
 }
 
 function steps() {
-  switch(items.bar.level) {
-
-  case 1: return 0.6;
-
-  case 2: return 0.7;
-
-  case 3: return 0.8;
-
-  case 4: return 0.85;
-
-  }
+    switch(items.bar.level) {
+        case 1: return 0.6;
+        case 2: return 0.7;
+        case 3: return 0.8;
+        case 4: return 0.85;
+    }
 }
 
 function steps1() {
-
     switch(items.bar.level) {
-
-    case 1: return 0.30;
-
-    case 2: return 0.40;
-
-    case 3: return 0.50;
-
-    case 4: return 0.60;
-
+        case 1: return 0.30;
+        case 2: return 0.40;
+        case 3: return 0.50;
+        case 4: return 0.60;
     }
 }
 
 function cloudanimation() {
     return items.random
-
 }
 
 function xsteps(){
-   if(items.random < 0.5) {
-       return 2;
-   } else {
-       return -0.25;
-   }
+    if(items.random < 0.5) {
+        return 2;
+    } else {
+        return -0.25;
+    }
 }

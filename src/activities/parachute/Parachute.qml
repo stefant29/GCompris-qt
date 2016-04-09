@@ -55,7 +55,7 @@ ActivityBase {
             activity.stop.connect(stop)
         }
         
-        onStart: {  }
+        onStart: {}
         onStop: { Activity.stop() }
 
         // Add here the QML items you need to access in javascript
@@ -68,7 +68,6 @@ ActivityBase {
             property alias bar: bar
             property alias bonus: bonus
             property alias animationboat: animationboat
-            property alias keyunable: keyunable
             property alias ok: ok
             property alias loop: loop
             property alias loopcloud: loopcloud
@@ -79,12 +78,12 @@ ActivityBase {
             property alias helicopter: helicopter
             property alias instruction: instruction
             property alias instructiontwo:instructiontwo
-            property real  velocityY: velocityY
-            property real  random
-            property real  downstep
-            property real  randomize: randomize
-            property var   dataset : {
-                        "none": qsTr(""),
+            property real velocityY: velocityY
+            property real random
+            property real downstep
+            property real randomize: randomize
+            property var dataset : {
+                        "none": "",
                         "helicopter": qsTr("\n   Click on \n the helicopter \n and let the \n tux jump"),
                         "Minitux": qsTr("\n  Click on \n the tux open \n the parachute"),
                         "parachute": qsTr("\n use up \n and down \n arrow key \n to regulate")
@@ -136,19 +135,18 @@ ActivityBase {
             text: qsTr("Control fall speed with up and down arrow keys")
         }
 
-
         Image {
             id: helicopter
-            source:activity.dataSetUrl + "tuxplane.svg"
+            source: activity.dataSetUrl + "tuxplane.svg"
             property variant size_levels: [6, 5, 7, 8]
             sourceSize.width: background.width / size_levels[bar.level]
             sourceSize.height: background.height / size_levels[bar.level]
+
             MouseArea {
                 id: mousei
-                hoverEnabled: true
                 anchors.fill: parent
                 onClicked: {
-                    if((Activity.Oneclick === false)&&(Activity.tuxfallingblock ===false)) {
+                    if(!Activity.Oneclick && !Activity.tuxfallingblock) {
                         tuximage.visible = true
                         tux.y = helicopter.y
                         tuxX.stop()
@@ -156,7 +154,7 @@ ActivityBase {
                         /*     activity.audioEffects.play(activity.dataSetUrl+"youcannot.wav");
                             sound file is not supporting in linux please do remove it before the merge */
                         instruction.visible = false
-                        if(bar.level===1) {
+                        if(bar.level === 1) {
                            instructiontwo.visible = true
                         }
                         Activity.flagoutboundry = 1
@@ -169,8 +167,8 @@ ActivityBase {
                         tux.state = "Released"
                     }
                 }
-
             }
+
             SequentialAnimation {
                 id: loop
                 loops: Animation.Infinite
@@ -199,9 +197,9 @@ ActivityBase {
             id: instruction
             width: bubble.width
             height: bubble.height
-            anchors.left:helicopter.right
-            visible:bar.level === 1 ? true:false
-            Image{
+            anchors.left: helicopter.right
+            visible: bar.level === 1
+            Image {
                 id: bubble
                 source: activity.dataSetUrl + "shower.svg"
                 width: sourceSize.width
@@ -212,9 +210,8 @@ ActivityBase {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:items.dataset["helicopter"]
                 }
-           }
+            }
         }
-
 
         Item {
             id: tux
@@ -224,25 +221,25 @@ ActivityBase {
             state:"rest"
             Item {
                 id: instructiontwo
-                visible:false
-                anchors.left:tuximage.right
-                Image{
-                    id:bubble2
-                    source:activity.dataSetUrl + "shower.svg"
-                    width:sourceSize.width
-                    height:sourceSize.height
+                visible: false
+                anchors.left: tuximage.right
+                Image {
+                    id: bubble2
+                    source: activity.dataSetUrl + "shower.svg"
+                    width: sourceSize.width
+                    height: sourceSize.height
 
-                    GCText{
-                        id:caption2
-                        fontSize:tinySize
-                        anchors.horizontalCenter:parent.horizontalCenter
-                        text:items.dataset["Minitux"]
+                    GCText {
+                        id: caption2
+                        fontSize: tinySize
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: items.dataset["Minitux"]
                     }
                 }
             }
             Image {
                 id: tuximage
-                source:randomize > 0.4 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
+                source: randomize > 0.4 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
                 visible: false
                 property variant size_levels: [6, 7, 6, 7]
                 sourceSize.width: background.width / size_levels[bar.level]
@@ -260,11 +257,8 @@ ActivityBase {
                             Activity.tuxImageStatus = 2
                             touch.enabled = true
                             items.downstep = (bar.level === 1 ? 0.09 : bar.level === 2 ? 0.1 : bar.level === 3 ? 0.12 : bar.level === 4 ? 0.13 : 9000)
-
                         }
                     }
-
-
                 }
             }
 
@@ -273,7 +267,7 @@ ActivityBase {
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
                     touch.enabled = false
-                    if(bar.level===1&&Activity.tuxImageStatus===1) {
+                    if(bar.level === 1 && Activity.tuxImageStatus === 1) {
                         instructiontwo.visible = false
                     }
                     Activity.tuxImageStatus = 0
@@ -281,7 +275,7 @@ ActivityBase {
                     items.keyunable.visible = false
                 }
 
-                if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))){
+                if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))) {
                     tux.state = "finished"
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
@@ -289,8 +283,7 @@ ActivityBase {
                     Activity.onWin()
                     items.keyunable.visible = false
                 }
-
-                else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))){
+                else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))) {
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
                     touch.enabled = false
@@ -302,13 +295,13 @@ ActivityBase {
             }
 
             onXChanged: {
-                if(tux.state==="UpPressed"||tux.state==="DownPressed"||tux.state==="Released"||tux.state==="Released1") {
+                if(tux.state === "UpPressed" || tux.state === "DownPressed" || tux.state === "Released" || tux.state === "Released1") {
                     Activity.edgeflag =1;
                 } else {
                     Activity.edgeflag = -1;
                 }
 
-                if(( Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1||Activity.flagoutboundry)) {
+                if((Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1 || Activity.flagoutboundry)) {
 
                     if(tux.x > (background.width-tux.width/2)&&(Activity.flagoutboundry!=2)&&(Activity.edgeflag===1)) {
                         Activity.flagoutboundry = 2
@@ -323,13 +316,8 @@ ActivityBase {
                         velocityX = 500
                         tux.state = "relaxatback"
                     }
-
-
-
                 }
-
             }
-
 
             SequentialAnimation {
                 id: tuxX
@@ -344,20 +332,20 @@ ActivityBase {
                 }
             }
 
-            SequentialAnimation{
+            SequentialAnimation {
                 id:rotations
                 loops:Animation.Infinite
                 running:tux.state === "Released" || tux.state === "UpPressed" || tux.state === "DownPressed"
                 || tux.state === "Released1"
-                PropertyAnimation{
-                    target:tux
+                PropertyAnimation {
+                    target: tux
                     property: "rotation"
                     from: -6; to: 6
                     duration: 500
                     easing.type: Easing.InOutQuad
                 }
-                PropertyAnimation{
-                    target:tux
+                PropertyAnimation {
+                    target: tux
                     property: "rotation"
                     from: 6; to: -6
                     duration: 500
@@ -366,170 +354,147 @@ ActivityBase {
             }
 
             states: [
-                State{
+                State {
                     name:"rest"
                     PropertyChanges {
                         target: tux
-                        y:helicopter.y
-
-
+                        y: helicopter.y
                     }
                 },
-
                 State {
                     name: "UpPressed"
                     PropertyChanges {
                         target: tux
-                        y:(tux.y + .02)
-                        x:(tux.x + Activity.xsteps())
+                        y: (tux.y + .02)
+                        x: (tux.x + Activity.xsteps())
                     }
 
                 },
-
                 State {
                     name: "DownPressed"
                     PropertyChanges {
                         target: tux
-                        y:(tux.y + items.downstep)
-                        x:(tux.x + Activity.xsteps())
+                        y: (tux.y + items.downstep)
+                        x: (tux.x + Activity.xsteps())
                     }
                 },
-
                 State {
                     name: "Released"
                     PropertyChanges {
-                        target:tux
-                        y:(tux.y + Activity.steps())
-                        x:(tux.x + Activity.xsteps())
+                        target: tux
+                        y: (tux.y + Activity.steps())
+                        x: (tux.x + Activity.xsteps())
                     }
 
                 },
-
-                State{
+                State {
                     name:"Released1"
                     PropertyChanges {
                         target: tux
-                        y:(tux.y + Activity.steps1())
-                        x:(tux.x + Activity.xsteps())
+                        y: (tux.y + Activity.steps1())
+                        x: (tux.x + Activity.xsteps())
                     }
-
                 },
-
                 State {
                     name: "finished"
                     PropertyChanges {
                         target: tux
                     }
                 },
-
                 State {
                     name:"backedge"
                     PropertyChanges {
                         target: tux
-                        visible:false
-                        y:tux.y
-                        x:tux.x-10
+                        visible: false
+                        y: tux.y
+                        x: tux.x-10
                     }
                 },
-
                 State {
                     name: "relaxatintal"
                     PropertyChanges {
                         target: tux
-                        visible:false
-                        y:tux.y
-                        x:tux.width/3
+                        visible: false
+                        y: tux.y
+                        x: tux.width/3
                     }
                 },
-
                 State {
                     name: "initaledge"
                     PropertyChanges {
                         target: tux
-                        visible:false
-                        y:tux.y
-                        x:tux.x-10
+                        visible: false
+                        y: tux.y
+                        x: tux.x-10
                     }
                 },
-
                 State {
                     name: "relaxatback"
                     PropertyChanges {
                         target: tux
-                        visible:false
-                        y:tux.y
-                        x:background.width-(tux.width/2)
+                        visible: false
+                        y: tux.y
+                        x: background.width-(tux.width/2)
                     }
                 }
-
-
             ]
 
             transitions: [
                 Transition {
                     from: "backedge"
                     to: "relaxatintal"
-                    NumberAnimation { properties:"x"; duration:10   }
+                    NumberAnimation { properties:"x"; duration:10 }
                     onRunningChanged: {
-
                         if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&
                                 (tux.state==="backedge"||tux.state==="relaxatintal")) {
                             Activity.flagoutboundry = 1
                             tux.visible = true;
                             velocityX = Activity.velocityX
-                            if(Activity.tuxImageStatus ===1) {
-                                tux.state="Released"
+                            if(Activity.tuxImageStatus === 1) {
+                                tux.state = "Released"
                             }  else if(Activity.tuxImageStatus === 2) {
-                                tux.state="Released1"
+                                tux.state = "Released1"
                             }
                         }
-
                     }
-
                 },
                 Transition {
                     from: "initaledge"
                     to: "relaxatback"
-                    NumberAnimation { properties:"x"; duration:10   }
+                    NumberAnimation { properties:"x"; duration:10 }
                     onRunningChanged: {
                         if((Activity.flaginboundry === 2)&&(tux.x > background.width-(tux.width/1.5))&&
                            (Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
                             Activity.flaginboundry = 1;
                             tux.visible = true;
                             velocityX = Activity.velocityX
-                            if(Activity.tuxImageStatus ===1) {
+                            if(Activity.tuxImageStatus === 1) {
                                 tux.state = "Released"
                             } else if(Activity.tuxImageStatus === 2) {
                                 tux.state = "Released1"
                             }
                         }
-
                     }
-
                 }
             ]
 
             Behavior on x {
-                SmoothedAnimation { velocity: Activity.velocityX  }
+                SmoothedAnimation { velocity: Activity.velocityX }
             }
             Behavior on y {
-                id:soomthvelocityy
                 SmoothedAnimation { velocity: Activity.velocityY[bar.level-1] }
             }
-
-
         }
 
         Keys.onReleased: {
             if(Activity.tuxImageStatus === 1 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 velocityY = Activity.velocityY[bar.level-1]
                 tux.state = "Released"
-
-            } else if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
+            }
+            else if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 velocityY = Activity.velocityY[bar.level-1]
                 tux.state = "Released1"
             }
-
         }
 
         Keys.onUpPressed: {
@@ -540,22 +505,19 @@ ActivityBase {
         }
 
         Keys.onDownPressed: {
-
             if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 tux.state = "DownPressed"
                 velocityY = velocityY*0.2
                 items.downstep = items.downstep + 0.02
             }
-
-
         }
 
         MultiPointTouchArea {
-            id:touch
-            anchors.fill:parent
-            enabled:false
+            id: touch
+            anchors.fill: parent
+            enabled: false
             touchPoints: [ TouchPoint { id: point1 } ]
-            onPressed:  {
+            onPressed: {
                 if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                     if(Activity.tuxImageStatus === 2) {
                         if(point1.y < tux.y ) {
@@ -569,19 +531,18 @@ ActivityBase {
                         }
                     }
                 }
-
             }
+
             onReleased: {
-                if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
+                if(Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                     if(Activity.tuxImageStatus === 1) {
                         velocityY = Activity.velocityY[bar.level-1]
                         tux.state = "Released"
-
-                    } else if(Activity.tuxImageStatus === 2) {
+                    }
+                    else if(Activity.tuxImageStatus === 2) {
                         velocityY = Activity.velocityY[bar.level-1]
                         tux.state = "Released1"
                     }
-
                 }
             }
         }
@@ -600,7 +561,7 @@ ActivityBase {
                 sourceSize.height: background.height / size_levels[bar.level]
             }
             SequentialAnimation {
-                id:loopcloud
+                id: loopcloud
                 loops: Animation.Infinite
                 PropertyAnimation {
                     id: animationcloud
@@ -619,7 +580,7 @@ ActivityBase {
             id:boatmotion
             Image {
                 id: boat
-                property variant widthboat:[4,4.5,5,3]
+                property variant widthboat: [4,4.5,5,3]
                 source: activity.dataSetUrl + "fishingboat.svg"
                 y: background.height/1.3
                 sourceSize.width: background.width/widthboat[bar.level-1]
@@ -635,7 +596,7 @@ ActivityBase {
                     easing.type: Easing.Linear
                     onRunningChanged: {
                         boat.x = Qt.binding(function() { return animationboat.to })
-                        if(boat.x < animationboat.to ){
+                        if(boat.x < animationboat.to) {
                             boatmotion.state = "yless"
                         }
                         else {
@@ -650,14 +611,14 @@ ActivityBase {
                 State {
                     name: "yless"
                     PropertyChanges {
-                        target:boat
-                        y:boat.y-0.1
+                        target: boat
+                        y: boat.y-0.1
                     }
                 },
                 State {
                     name: "normal"
                     PropertyChanges {
-                        target:boat
+                        target: boat
 
 
                     }
