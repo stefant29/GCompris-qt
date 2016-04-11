@@ -104,7 +104,12 @@ function onLose() {
     items.tux.y = 0
     tuxImageStatus = 0
     items.tuximage.visible = false
-    items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    items.randomize = Math.floor()
+    if(items.randomize > 0.5){
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    } else {
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
+    }
     checkPressed = false
     winlose = false
     Oneclick = false
@@ -127,7 +132,11 @@ function onWin() {
     items.tux.x = -items.helicopter.width
     items.tux.y = 0
     items.ok.visible = true
-    items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    if(items.randomize > 0.5){
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    } else {
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
+    }
 }
 
 function nextLevel() {
@@ -157,7 +166,11 @@ function onReset() {
     items.tuxX.stop()
     tuxImageStatus = 0
     items.tuximage.visible = false
-    items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    if(items.randomize > 0.5){
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    } else {
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
+    }
     checkPressed = false
     winlose = false
     Oneclick = false

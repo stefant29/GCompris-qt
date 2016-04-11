@@ -206,6 +206,8 @@ ActivityBase {
                 height: sourceSize.height
                 GCText {
                     id: caption
+                    fontSizeMode:Text.Fit
+                    font.weight: Font.DemiBold
                     fontSize:tinySize
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:items.dataset["helicopter"]
@@ -233,13 +235,15 @@ ActivityBase {
                         id: caption2
                         fontSize: tinySize
                         anchors.horizontalCenter: parent.horizontalCenter
+                        fontSizeMode:Text.Fit
+                        font.weight: Font.DemiBold
                         text: items.dataset["Minitux"]
                     }
                 }
             }
             Image {
                 id: tuximage
-                source: randomize > 0.4 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
+                source: randomize > 0.5 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
                 visible: false
                 property variant size_levels: [6, 7, 6, 7]
                 sourceSize.width: background.width / size_levels[bar.level]
