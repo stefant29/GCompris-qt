@@ -32,7 +32,6 @@ ActivityBase {
 
     property real velocityX
     property real velocityY
-    property real randomize: Math.random()
     
     property string dataSetUrl: "qrc:/gcompris/src/activities/parachute/resource/"
     
@@ -77,15 +76,14 @@ ActivityBase {
             property alias tuximage: tuximage
             property alias helicopter: helicopter
             property alias instruction: instruction
-            property alias instructiontwo:instructiontwo
+            property alias instructiontwo: instructiontwo
             property real velocityY: velocityY
             property real random
             property real downstep
-            property real randomize: randomize
+            property real randomize
             property var dataset : {
-                        "none": "",
-                        "helicopter": qsTr("\n   Click on \n the helicopter \n and let the \n tux jump"),
-                        "Minitux": qsTr("\n  Click on \n the tux open \n the parachute"),
+                        "helicopter": qsTr("\n   Click on \n the helicopter \n and let \n tux jump"),
+                        "Minitux": qsTr("\n  Click on \n tux open \n the parachute"),
                         "parachute": qsTr("\n use up \n and down \n arrow key \n to regulate")
             }
 
@@ -99,14 +97,14 @@ ActivityBase {
 
             intro: [
                 qsTr("The red boat moves in the water from left to right."),
-                qsTr("Penguin Tux falls off from the plane, to land on the boat safely. "),
-                qsTr("The purpose of the game is to determine the exact time when"
-                     + "he should fall off from the plane, in order to safely get to the boat. "),
-                qsTr("Tux also carries a parachute, that lets him prevent free fall under gravity, that is dangerous."
+                qsTr("Tux falls off from the plane and wants to land on the boat safely."),
+                qsTr("The purpose of the game is to determine the exact time when "
+                     + "he should fall off from the plane, in order to safely get to the boat."),
+                qsTr("Tux also carries a parachute, that lets him prevent free fall under gravity, that is dangerous. "
                      +"Tux falls off when the player left clicks on the plane."),
-                qsTr("His speed can be controlled by the player by pressing UP and DOWN arrow keys,"
-                     + "such that Tux is saved from falling in water. "),
-                qsTr("Help Tux save his life!"+"Otherwise he will die")
+                qsTr("His speed can be controlled by the player by pressing UP and DOWN arrow keys, "
+                     + "such that Tux is saved from falling in water."),
+                qsTr("Help Tux landing on the boat!")
             ]
             z: 20
 
@@ -124,7 +122,6 @@ ActivityBase {
             source: activity.dataSetUrl + "foreground.svg"
             anchors.bottom: parent.bottom
             sourceSize.width: parent.width
-
         }
 
         GCText {
@@ -178,8 +175,7 @@ ActivityBase {
                     properties: "x"
                     from: -helicopter.width
                     to: background.width
-                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ?
-                                                                                                         10000 : 9000)
+                    duration: Activity.planeDurationAnimation[bar.level]
                     easing.type: Easing.Linear
                 }
             }
@@ -243,7 +239,7 @@ ActivityBase {
             }
             Image {
                 id: tuximage
-                source: randomize > 0.5 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
+                source: items.randomize > 0.5 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
                 visible: false
                 property variant size_levels: [6, 7, 6, 7]
                 sourceSize.width: background.width / size_levels[bar.level]
@@ -252,6 +248,7 @@ ActivityBase {
                     id: tuxmouse
                     anchors.fill: parent
                     hoverEnabled: true
+                    property variant downstep: [0, 0.09, 0.1, 0.12, 0.13]
                     onClicked: {
                         if(Activity.tuxImageStatus === 1) {
                             instructiontwo.visible = false
@@ -260,15 +257,15 @@ ActivityBase {
                             tuximage.source = activity.dataSetUrl + Activity.parachutetux
                             Activity.tuxImageStatus = 2
                             touch.enabled = true
-                            items.downstep = (bar.level === 1 ? 0.09 : bar.level === 2 ? 0.1 : bar.level === 3 ? 0.12 : bar.level === 4 ? 0.13 : 9000)
+                            items.downstep = downstep[bar.level]
                         }
                     }
                 }
             }
 
             onYChanged: {
-                if( (tux.y > background.height/1.5)&& Activity.tuxImageStatus === 1 ) {
-                    activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
+                if((tux.y > background.height/1.5) && Activity.tuxImageStatus === 1) {
+                    activity.audioEffects.play(activity.dataSetUrl + "bubble.wav")
                     tux.state = "finished"
                     touch.enabled = false
                     if(bar.level === 1 && Activity.tuxImageStatus === 1) {
@@ -276,7 +273,7 @@ ActivityBase {
                     }
                     Activity.tuxImageStatus = 0
                     Activity.onLose()
-                    items.keyunable.visible = false
+                    keyunable.visible = false
                 }
 
                 if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))) {
@@ -285,7 +282,7 @@ ActivityBase {
                     Activity.tuxImageStatus = 0
                     Activity.tuxfallingblock = true
                     Activity.onWin()
-                    items.keyunable.visible = false
+                    keyunable.visible = false
                 }
                 else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))) {
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
@@ -293,28 +290,27 @@ ActivityBase {
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
                     Activity.onLose()
-                    items.keyunable.visible = false
+                    keyunable.visible = false
                 }
-
             }
 
             onXChanged: {
                 if(tux.state === "UpPressed" || tux.state === "DownPressed" || tux.state === "Released" || tux.state === "Released1") {
-                    Activity.edgeflag =1;
+                    Activity.edgeflag = 1;
                 } else {
                     Activity.edgeflag = -1;
                 }
 
                 if((Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1 || Activity.flagoutboundry)) {
 
-                    if(tux.x > (background.width-tux.width/2)&&(Activity.flagoutboundry!=2)&&(Activity.edgeflag===1)) {
+                    if(tux.x > (background.width-tux.width/2) && (Activity.flagoutboundry != 2) && (Activity.edgeflag === 1)) {
                         Activity.flagoutboundry = 2
                         tux.state = "backedge"
                         velocityX = 500
                         tux.state = "relaxatintal"
                     }
 
-                    if((tux.x < 0&&Activity.flagoutboundry!=2&&Activity.flaginboundry!=2)&&(Activity.edgeflag===1)) {
+                    if((tux.x < 0 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) && (Activity.edgeflag === 1)) {
                         Activity.flaginboundry = 2
                         tux.state = "initaledge"
                         velocityX = 500
@@ -331,8 +327,7 @@ ActivityBase {
                     properties: "x"
                     from: -helicopter.width
                     to: background.width
-                    duration: (bar.level === 1 ? 20000 : bar.level === 2 ? 16000 : bar.level === 3 ? 12000 : bar.level === 4 ?
-                                                                                                         10000 : 9000)
+                    duration: Activity.tuxXDurationAnimation[bar.level]
                 }
             }
 
@@ -449,8 +444,8 @@ ActivityBase {
                     to: "relaxatintal"
                     NumberAnimation { properties:"x"; duration:10 }
                     onRunningChanged: {
-                        if((Activity.flagoutboundry === 2)&&(tux.x===(tux.width/3))&&
-                                (tux.state==="backedge"||tux.state==="relaxatintal")) {
+                        if((Activity.flagoutboundry === 2) && (tux.x === tux.width/3) &&
+                                (tux.state === "backedge" || tux.state === "relaxatintal")) {
                             Activity.flagoutboundry = 1
                             tux.visible = true;
                             velocityX = Activity.velocityX
@@ -467,8 +462,8 @@ ActivityBase {
                     to: "relaxatback"
                     NumberAnimation { properties:"x"; duration:10 }
                     onRunningChanged: {
-                        if((Activity.flaginboundry === 2)&&(tux.x > background.width-(tux.width/1.5))&&
-                           (Activity.flagoutboundry!=2)&&(tux.state==="initaledge"||tux.state==="relaxatback")) {
+                        if((Activity.flaginboundry === 2) && (tux.x > background.width-(tux.width/1.5))&&
+                           (Activity.flagoutboundry != 2) && (tux.state === "initaledge" || tux.state === "relaxatback")) {
                             Activity.flaginboundry = 1;
                             tux.visible = true;
                             velocityX = Activity.velocityX
@@ -502,16 +497,16 @@ ActivityBase {
         }
 
         Keys.onUpPressed: {
-            if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry !=2 && Activity.flaginboundry != 2) {
+            if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 tux.state = "UpPressed"
-                velocityY = velocityY/2
+                velocityY = velocityY / 2
             }
         }
 
         Keys.onDownPressed: {
             if(Activity.tuxImageStatus === 2 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
                 tux.state = "DownPressed"
-                velocityY = velocityY*0.2
+                velocityY = velocityY * 0.2
                 items.downstep = items.downstep + 0.02
             }
         }
@@ -561,8 +556,8 @@ ActivityBase {
                 source: activity.dataSetUrl + "cloud.svg"
                 y: background.height/7
                 property variant size_levels: [8, 9, 9.6, 10]
-                sourceSize.width: background.width / size_levels[bar.level]
-                sourceSize.height: background.height / size_levels[bar.level]
+                sourceSize.width: background.width / size_levels[bar.level-1]
+                sourceSize.height: background.height / size_levels[bar.level-1]
             }
             SequentialAnimation {
                 id: loopcloud
@@ -571,20 +566,19 @@ ActivityBase {
                     id: animationcloud
                     target: cloudmotion
                     properties: "x"
-                    from:items.random > 0.5 ?  background.width : -cloud.width
-                    to:animationcloud.from === background.width ? -cloud.width : background.width
-                    duration: (bar.level === 1 ? 14000 : bar.level === 2 ? 15000 : bar.level === 3 ? 11000 : bar.level === 4 ?
-                    9000 : 9000)
+                    from: items.random > 0.5 ?  background.width : -cloud.width
+                    to: animationcloud.from === background.width ? -cloud.width : background.width
+                    duration: Activity.loopCloudDurationAnimation[bar.level]
                     easing.type: Easing.Linear
                 }
             }
         }
 
         Item {
-            id:boatmotion
+            id: boatmotion
             Image {
                 id: boat
-                property variant widthboat: [4,4.5,5,3]
+                property variant widthboat: [4, 4.5, 5, 3]
                 source: activity.dataSetUrl + "fishingboat.svg"
                 y: background.height/1.3
                 sourceSize.width: background.width/widthboat[bar.level-1]
@@ -595,8 +589,7 @@ ActivityBase {
                     properties: "x"
                     from: -boat.width
                     to: background.width * 0.5
-                    duration: (bar.level === 1 ? 24000 : bar.level === 2 ? 20500 : bar.level === 3 ? 19000 : bar.level === 4 ?
-                     17000 : 9000)
+                    duration: Activity.boatDurationAnimation[bar.level]
                     easing.type: Easing.Linear
                     onRunningChanged: {
                         boat.x = Qt.binding(function() { return animationboat.to })
@@ -623,8 +616,6 @@ ActivityBase {
                     name: "normal"
                     PropertyChanges {
                         target: boat
-
-
                     }
                 }
             ]
@@ -653,8 +644,8 @@ ActivityBase {
             visible: false
             anchors.right: background.right
             onClicked: {
-                Activity.loseflag = true
                 Activity.nextLevel()
+                visible = false
             }
         }
 
@@ -662,8 +653,5 @@ ActivityBase {
             id: bonus
             onWin: ok.visible = true
         }
-
     }
-
 }
-

@@ -31,8 +31,6 @@ var items
 var checkPressed = false
 var pressed
 var Oneclick
-var winlose
-var loseflag = false
 var minitux = "minitux.svg"
 var minituxette = "minituxette.svg"
 var parachutetux = "parachute.svg"
@@ -45,6 +43,10 @@ var edgeflag = 0
 var tuxfallingblock = false
 var velocityY = [80, 90, 90, 90]
 var velocityX = 18
+var tuxXDurationAnimation = [9000, 20000, 16000, 12000, 10000]
+var planeDurationAnimation = [9000, 20000, 16000, 12000, 10000]
+var loopCloudDurationAnimation = [9000, 14000, 15000, 11000, 9000]
+var boatDurationAnimation = [9000, 24000, 20500, 19000, 17000]
 
 function start(items_) {
     items = items_
@@ -53,17 +55,13 @@ function start(items_) {
 }
 
 function stop() {
-    items.loop.stop()
-    items.loopcloud.restart()
-    items.animationboat.stop()
+    reinitialize();
 }
 
 function initLevel() {
-    if(loseflag == false) {
-       items.bar.level = currentLevel + 1
-    }
+    items.bar.level = currentLevel + 1
 
-    if(items.bar.level===1) {
+    if(items.bar.level === 1) {
         items.instruction.visible = true
     }
     else {
@@ -71,10 +69,8 @@ function initLevel() {
     }
 
     checkPressed = false
-    winlose = false
     Oneclick = false
     pressed = false
-    loseflag = false
     items.helicopter.source = "qrc:/gcompris/src/activities/parachute/resource/" +  planeWithtux
     items.helicopter.visible = true
     items.touch.visible = false
@@ -87,60 +83,47 @@ function initLevel() {
     items.tux.y = 0
     items.tux.x = 0
     tuxfallingblock = false
-    items.ok.visible = false
     items.loop.restart()
     items.tuxX.restart()
     items.loopcloud.restart()
     items.animationboat.restart()
 }
 
-function onLose() {
+function reinitialize() {
     items.loop.stop()
     items.loopcloud.stop()
     items.animationboat.stop()
     items.tuxX.stop()
-    items.bonus.bad("lion")
-    items.tux.x = -items.helicopter.width
-    items.tux.y = 0
-    tuxImageStatus = 0
-    items.tuximage.visible = false
-    items.randomize = Math.floor()
-    if(items.randomize > 0.5){
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
-    } else {
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
-    }
     checkPressed = false
-    winlose = false
     Oneclick = false
     pressed = false
-    loseflag = true
+    items.tux.x = -items.helicopter.width
+    items.tux.y = 0
+    items.tuximage.visible = false
+    tuxImageStatus = 0
+    items.randomize = Math.random()
+    if(items.randomize > 0.5) {
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
+    }
+    else {
+        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
+    }
+}
+
+function onLose() {
+    reinitialize()
+    items.bonus.bad("lion")
     initLevel()
 }
 
 function onWin() {
-    items.loop.stop()
-    items.loopcloud.stop()
-    items.animationboat.stop()
-    items.tuxX.stop()
-    items.tuximage.visible = false
-    checkPressed = false
-    winlose = false
-    Oneclick = false
-    pressed = false
-    items.bonus.good("lion");
-    items.tux.x = -items.helicopter.width
-    items.tux.y = 0
+    reinitialize()
+    items.bonus.good("lion")
     items.ok.visible = true
-    if(items.randomize > 0.5){
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
-    } else {
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
-    }
 }
 
 function nextLevel() {
-    if(numberOfLevel <= ++currentLevel ) {
+    if(numberOfLevel <= ++currentLevel) {
         currentLevel = 0
     }
     onReset();
@@ -156,31 +139,13 @@ function previousLevel() {
 }
 
 function onReset() {
-    if(items.bar.level === 1 && tuxImageStatus === 1){
+    if(items.bar.level === 1 && tuxImageStatus === 1) {
         items.instructiontwo.visible = false
     }
     items.tux.state = "finished"
-    items.loop.stop()
-    items.loopcloud.stop()
-    items.animationboat.stop()
-    items.tuxX.stop()
-    tuxImageStatus = 0
-    items.tuximage.visible = false
-    if(items.randomize > 0.5){
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minitux
-    } else {
-        items.tuximage.source = "qrc:/gcompris/src/activities/parachute/resource/" + minituxette
-    }
-    checkPressed = false
-    winlose = false
-    Oneclick = false
-    pressed = false
-    loseflag = true
+    reinitialize()
     tuxfallingblock = false
-    items.tux.x = -items.helicopter.width
-    items.tux.y = 0
     initLevel()
-
 }
 
 function steps() {
@@ -205,10 +170,11 @@ function cloudanimation() {
     return items.random
 }
 
-function xsteps(){
+function xsteps() {
     if(items.random < 0.5) {
         return 2;
-    } else {
+    }
+    else {
         return -0.25;
     }
 }
