@@ -21,7 +21,7 @@ ActivityInfo {
   name: "parachute/Parachute.qml"
   difficulty: 1
   icon: "parachute/parachute.svg"
-  author: "Rajdeep Kaur &lt;rajdeep51994@gmail.com&gt;"
+  author: "Rajdeep Kaur &lt;rajdeep.kaur@kde.org&gt;"
   demo: true
   title: qsTr("Parachute activity")
   description: qsTr("Help Tux the parachutist land safely")

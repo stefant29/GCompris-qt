@@ -1,10 +1,10 @@
 /* GCompris - parachute.qml
  *
- * Copyright (C) 2015 Rajdeep Kaur <rajdeep51994@gmail.com>
+ * Copyright (C) 2015 Rajdeep Kaur <rajdeep.kaur@kde.org>
  *
  * Authors:
  *   Bruno Coudoin <bruno.coudoin@gcompris.net> (GTK+ version)
- *   Rajdeep kaur<rajdeep51994@gmail.com> (Qt Quick port)
+ *   Rajdeep kaur <rajdeep.kaur@kde.org> (Qt Quick port)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@ ActivityBase {
             property alias loop: loop
             property alias loopcloud: loopcloud
             property alias tuxX: tuxX
-            property alias touch: touch
             property alias tux: tux
             property alias tuximage: tuximage
             property alias helicopter: helicopter
@@ -118,6 +117,40 @@ ActivityBase {
             }
         }
 
+        MultiPointTouchArea {
+            id:touch
+            anchors.fill: parent
+            touchPoints: [ TouchPoint { id: point1 } ]
+            enabled:false
+            onPressed: {
+                if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2 && Activity.tuxImageStatus === 2) {
+                    if(point1.y < tux.y ) {
+                            tux.state = "UpPressed"
+                            velocityY = velocityY/2
+                        }
+                        else {
+                            tux.state = "DownPressed"
+                            velocityY = velocityY * 0.8
+                            items.downstep = items.downstep + 0.8
+                        }
+
+                }
+            }
+
+            onReleased: {
+                if(Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
+                    if(Activity.tuxImageStatus === 1) {
+                        velocityY = Activity.velocityY[bar.level-1]
+                        tux.state = "Released"
+                    }
+                    else if(Activity.tuxImageStatus === 2) {
+                        velocityY = Activity.velocityY[bar.level-1]
+                        tux.state = "Released1"
+                    }
+                }
+            }
+        }
+
         Image {
             source: activity.dataSetUrl + "foreground.svg"
             anchors.bottom: parent.bottom
@@ -157,10 +190,11 @@ ActivityBase {
                         Activity.flagoutboundry = 1
                         Activity.tuxImageStatus = 1
                         Activity.flaginboundry  = 1
+                        Activity.okaystate = 1
                         Activity.Oneclick = true;
                         velocityX = Activity.velocityX
                         velocityY = (items.bar.level === 1 ? 30 : items.bar.level === 2 ? 40 : items.bar.level === 3
-                                                                                          ? 55 : items.bar.level === 4 ? 80 : 12 )
+                        ? 55 : items.bar.level === 4 ? 80 : 12 )
                         tux.state = "Released"
                     }
                 }
@@ -198,8 +232,8 @@ ActivityBase {
             Image {
                 id: bubble
                 source: activity.dataSetUrl + "shower.svg"
-                width: sourceSize.width
-                height: sourceSize.height
+                width: caption.width
+                height: caption.height
                 GCText {
                     id: caption
                     fontSizeMode:Text.Fit
@@ -207,6 +241,8 @@ ActivityBase {
                     fontSize:tinySize
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:items.dataset["helicopter"]
+                    anchors.leftMargin:ApplicationInfo.ratio*10
+
                 }
             }
         }
@@ -224,13 +260,13 @@ ActivityBase {
                 Image {
                     id: bubble2
                     source: activity.dataSetUrl + "shower.svg"
-                    width: sourceSize.width
-                    height: sourceSize.height
-
+                    width: caption2.width
+                    height: caption2.width
                     GCText {
                         id: caption2
                         fontSize: tinySize
                         anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.leftMargin:ApplicationInfo.ratio*10
                         fontSizeMode:Text.Fit
                         font.weight: Font.DemiBold
                         text: items.dataset["Minitux"]
@@ -239,11 +275,12 @@ ActivityBase {
             }
             Image {
                 id: tuximage
-                source: items.randomize > 0.5 ? activity.dataSetUrl + Activity.minitux : activity.dataSetUrl + Activity.minituxette
+                source: items.randomize > 0.5 ? activity.dataSetUrl + Activity.minitux :
+                                                activity.dataSetUrl + Activity.minituxette
                 visible: false
-                property variant size_levels: [6, 7, 6, 7]
-                sourceSize.width: background.width / size_levels[bar.level]
-                sourceSize.height: background.height / size_levels[bar.level]
+                property variant size_levels: [7, 8, 9, 7]
+                width: background.width / size_levels[bar.level]
+                height: background.height / size_levels[bar.level]
                 MouseArea {
                     id: tuxmouse
                     anchors.fill: parent
@@ -276,15 +313,19 @@ ActivityBase {
                     keyunable.visible = false
                 }
 
-                if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x>boat.x) && (tux.x<boat.x+boat.width))) {
+                if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) &&
+                        ((tux.x>boat.x) && (tux.x<boat.x+boat.width))) {
                     tux.state = "finished"
                     touch.enabled = false
                     Activity.tuxImageStatus = 0
                     Activity.tuxfallingblock = true
+                    Activity.okaystate = 2
                     Activity.onWin()
                     keyunable.visible = false
                 }
-                else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) && ((tux.x<boat.x)||(tux.x>boat.x+boat.width))) {
+
+                else if((tux.y > background.height/1.5 && Activity.tuxImageStatus === 2) &&
+                        ((tux.x<boat.x)||(tux.x>boat.x+boat.width))) {
                     activity.audioEffects.play(activity.dataSetUrl + "bubble.wav" )
                     tux.state = "finished"
                     touch.enabled = false
@@ -295,22 +336,26 @@ ActivityBase {
             }
 
             onXChanged: {
-                if(tux.state === "UpPressed" || tux.state === "DownPressed" || tux.state === "Released" || tux.state === "Released1") {
+                if(tux.state === "UpPressed" || tux.state === "DownPressed" ||
+                        tux.state === "Released" || tux.state === "Released1") {
                     Activity.edgeflag = 1;
                 } else {
                     Activity.edgeflag = -1;
                 }
 
-                if((Activity.flaginboundry === 1 || Activity.flaginboundry === 2)&&(Activity.flagoutboundry === 1 || Activity.flagoutboundry)) {
+                if((Activity.flaginboundry === 1 || Activity.flaginboundry === 2)
+                        &&(Activity.flagoutboundry === 1 || Activity.flagoutboundry)) {
 
-                    if(tux.x > (background.width-tux.width/2) && (Activity.flagoutboundry != 2) && (Activity.edgeflag === 1)) {
+                    if(tux.x > (background.width-tux.width/2) && (Activity.flagoutboundry != 2) &&
+                            (Activity.edgeflag === 1)) {
                         Activity.flagoutboundry = 2
                         tux.state = "backedge"
                         velocityX = 500
                         tux.state = "relaxatintal"
                     }
 
-                    if((tux.x < 0 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) && (Activity.edgeflag === 1)) {
+                    if((tux.x < 0 && Activity.flagoutboundry != 2 && Activity.flaginboundry != 2)
+                            && (Activity.edgeflag === 1)) {
                         Activity.flaginboundry = 2
                         tux.state = "initaledge"
                         velocityX = 500
@@ -337,14 +382,14 @@ ActivityBase {
                 running:tux.state === "Released" || tux.state === "UpPressed" || tux.state === "DownPressed"
                 || tux.state === "Released1"
                 PropertyAnimation {
-                    target: tux
+                    target: tuximage
                     property: "rotation"
                     from: -6; to: 6
                     duration: 500
                     easing.type: Easing.InOutQuad
                 }
                 PropertyAnimation {
-                    target: tux
+                    target: tuximage
                     property: "rotation"
                     from: 6; to: -6
                     duration: 500
@@ -511,40 +556,7 @@ ActivityBase {
             }
         }
 
-        MultiPointTouchArea {
-            id: touch
-            anchors.fill: parent
-            enabled: false
-            touchPoints: [ TouchPoint { id: point1 } ]
-            onPressed: {
-                if( Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
-                    if(Activity.tuxImageStatus === 2) {
-                        if(point1.y < tux.y ) {
-                            tux.state = "UpPressed"
-                            velocityY = velocityY/2
-                        }
-                        else {
-                            tux.state = "DownPressed"
-                            velocityY = velocityY*0.8
-                            items.downstep = items.downstep + 0.8
-                        }
-                    }
-                }
-            }
 
-            onReleased: {
-                if(Activity.flagoutboundry != 2 && Activity.flaginboundry != 2) {
-                    if(Activity.tuxImageStatus === 1) {
-                        velocityY = Activity.velocityY[bar.level-1]
-                        tux.state = "Released"
-                    }
-                    else if(Activity.tuxImageStatus === 2) {
-                        velocityY = Activity.velocityY[bar.level-1]
-                        tux.state = "Released1"
-                    }
-                }
-            }
-        }
 
         Item {
             id: cloudmotion
@@ -555,7 +567,7 @@ ActivityBase {
                 id: cloud
                 source: activity.dataSetUrl + "cloud.svg"
                 y: background.height/7
-                property variant size_levels: [8, 9, 9.6, 10]
+                property variant size_levels: [8, 9, 9.6, 6]
                 sourceSize.width: background.width / size_levels[bar.level-1]
                 sourceSize.height: background.height / size_levels[bar.level-1]
             }
@@ -644,14 +656,21 @@ ActivityBase {
             visible: false
             anchors.right: background.right
             onClicked: {
-                Activity.nextLevel()
-                visible = false
+                if(Activity.okaystate === 2){
+                        Activity.okaystate = 0
+                        Activity.nextLevel()
+
+                }
             }
         }
 
         Bonus {
             id: bonus
-            onWin: ok.visible = true
+            onWin:{
+                if(Activity.okaystate === 2){
+                    ok.visible = true;
+                }
+            }
         }
     }
 }

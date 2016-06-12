@@ -1,10 +1,10 @@
 /* GCompris - parachute.js
  *
- *   Copyright (C) 2015 Rajdeep Kaur <rajdeep1994@gmail.com>
+ *   Copyright (C) 2015 Rajdeep Kaur <rajdeep.kaur@kde.org>
  *
  *    Authors:
  *    Bruno Coudoin <bruno.coudoin@gcompris.net> (GTK+ version)
- *    Rajdeep kaur <rajdeep51994@gmail.com> (Qt Quick port)
+ *    Rajdeep kaur <rajdeep.kaur@kde.org> (Qt Quick port)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -43,6 +43,8 @@ var edgeflag = 0
 var tuxfallingblock = false
 var velocityY = [80, 90, 90, 90]
 var velocityX = 18
+var loseflag = 0
+var okaystate = 0
 var tuxXDurationAnimation = [9000, 20000, 16000, 12000, 10000]
 var planeDurationAnimation = [9000, 20000, 16000, 12000, 10000]
 var loopCloudDurationAnimation = [9000, 14000, 15000, 11000, 9000]
@@ -63,21 +65,25 @@ function initLevel() {
 
     if(items.bar.level === 1) {
         items.instruction.visible = true
+        velocityY[items.bar.level] = loseflag === 1 ? velocityY[items.bar.level]*8 : velocityY[items.bar.level]*4
     }
     else {
+        velocityY[items.bar.level] = loseflag === 1 ? velocityY[items.bar.level]*8 : velocityY[items.bar.level]*4
         items.instruction.visible = false
     }
 
     checkPressed = false
     Oneclick = false
     pressed = false
+    items.ok.visible = false
     items.helicopter.source = "qrc:/gcompris/src/activities/parachute/resource/" +  planeWithtux
     items.helicopter.visible = true
-    items.touch.visible = false
     tuxImageStatus = 0
     flagoutboundry = 0
     flaginboundry = 0
     edgeflag = 0
+    loseflag = 0
+    okaystate = 0
     items.tux.state = "rest"
     items.random = Math.random();
     items.tux.y = 0
@@ -111,8 +117,11 @@ function reinitialize() {
 }
 
 function onLose() {
+    velocityY[items.bar.level] = velocityY[items.bar.level]*8
     reinitialize()
     items.bonus.bad("lion")
+    items.ok.visible = false
+    loseflag = 1
     initLevel()
 }
 
