@@ -97,6 +97,7 @@ money_back
 money_back_cents
 money_cents
 mosaic
+note_names
 numbers-odd-even
 paintings
 penalty
