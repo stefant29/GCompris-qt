@@ -115,6 +115,7 @@ scalesboard_weight_avoirdupois
 simplepaint
 smallnumbers
 smallnumbers2
+submarine
 sudoku
 superbrain
 tangram
