@@ -20,19 +20,24 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 .pragma library
+.import GCompris 1.0 as GCompris
 .import QtQuick 2.0 as Quick
 
 var currentLevel = 0
 var numberOfLevel = 4
 var items
+var barAtStart
 
 function start(items_) {
     items = items_
     currentLevel = 0
+    barAtStart = GCompris.ApplicationSettings.isBarHidden;
+    GCompris.ApplicationSettings.isBarHidden = true;
     initLevel()
 }
 
 function stop() {
+    GCompris.ApplicationSettings.isBarHidden = barAtStart;
 }
 
 function initLevel() {
