@@ -1,10 +1,6 @@
 /* GCompris - paint.qml
  *
- * Copyright (C) 2015 YOUR NAME <xx@yy.org>
- *
- * Authors:
- *   <THE GTK VERSION AUTHOR> (GTK+ version)
- *   YOUR NAME <YOUR EMAIL> (Qt Quick port)
+ * Copyright (C) 2016 Toncu Stefan <stefan.toncu29@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -50,36 +46,21 @@ ActivityBase {
             activity.stop.connect(stop)
         }
 
+        property bool started: false
+
         // When the width / height is changed, paint the last image on the canvas
-        /*
         onWidthChanged: {
-            items.widthHeightChanged = true
-            Activity.initLevel()
+            if (items.background.started) {
+                items.widthHeightChanged = true
+                Activity.initLevel()
+            }
         }
         onHeightChanged:  {
-            items.widthHeightChanged = true
-            Activity.initLevel()
-        }
-        */
-
-/*
-        onWidthChanged: {
-            print("image: ",items.canvas.toDataURL())
-
-            // check if anything is drawn on the canvas:
-            var aux = items.canvas.ctx.getImageData(0, 0, background.width, background.height)
-            var drawn = false
-            for(var i =0; i < aux.data.length; i++) {
-                if(aux.data[i]) {
-                    drawn = true;
-                    print('Something drawn on Canvas');
-                    break;
-                }
+            if (items.background.started) {
+                items.widthHeightChanged = true
+                Activity.initLevel()
             }
-            print("drawn: ",drawn)
-
         }
-*/
 
         File {
             id: file
@@ -162,7 +143,7 @@ ActivityBase {
 
         JsonParser {
             id: parser
-            onError: console.error("Balancebox: Error parsing JSON: " + msg);
+            onError: console.error("Paint: Error parsing JSON: " + msg);
         }
 
         onStart: { Activity.start(items) }
@@ -180,8 +161,6 @@ ActivityBase {
                 displayDialog(dialogHelp)
             }
             onHomeClicked: {
-                activity.home()
-                /*
                 if (!items.nothingChanged) {
                     saveToFilePrompt.text = "Do you want to save your painting?"
                     main.opacity = 0.5
@@ -192,11 +171,8 @@ ActivityBase {
                         load.opacity = 0
                     activity.home()
                 }
-                */
             }
             onReloadClicked: {
-                Activity.initLevel()
-                /*
                 if (!items.nothingChanged) {
                     saveToFilePrompt2.text = "Do you want to save your painting before reseting the board?"
                     main.opacity = 0.5
@@ -205,7 +181,6 @@ ActivityBase {
                 } else {
                     Activity.initLevel()
                 }
-                */
             }
         }
 
@@ -214,14 +189,12 @@ ActivityBase {
             Component.onCompleted: win.connect(Activity.nextLevel)
         }
 
-        /*
         Keys.onPressed: {
             if (event.key == Qt.Key_Escape) {
                 if (main.x == 0)
                     load.opacity = 0
             }
         }
-        */
 
         function hideExpandedTools () {
             selectSize.z = -1
@@ -364,7 +337,7 @@ ActivityBase {
                         id: onBoardText
                         text: ""
                         color: items.paintColor
-                        font.family: "Arial"
+                        font.family: "sans-serif"
                         // font.pointSize: (ApplicationSettings.baseFontSize + 32) * ApplicationInfo.fontRatio
                         font.pointSize: 100
                         z: -1
@@ -410,7 +383,8 @@ ActivityBase {
                             // mark the loadSavedImage as finished
                             items.loadSavedImage = false
                             requestPaint()
-                            print("requestPaint onImageLoaded from FILE  ")
+                            items.toolSelected = ""
+                            print("requestPaint onImageLoaded from FILE      " + items.toolSelected)
                             items.lastUrl = canvas.url
                             unloadImage(canvas.url)
                             items.mainAnimationOnX = true
@@ -536,7 +510,7 @@ ActivityBase {
                         } else if (items.toolSelected == "text") {
                             canvas.ctx.fillStyle = items.paintColor
 //                            canvas.ctx.font = "" + onBoardText.fontSize + "px " + GCSingletonFontLoader.fontLoader.name
-                            canvas.ctx.font = "100pt Arial"
+                            canvas.ctx.font = "100pt sans-serif"
                             canvas.ctx.fillText(onBoardText.text,area.realMouseX,area.realMouseY)
                             onBoardText.text = ""
                         } else if (items.toolSelected == "tools" ) {

@@ -1,10 +1,6 @@
 /* GCompris - paint.js
  *
- * Copyright (C) 2015 YOUR NAME <xx@yy.org>
- *
- * Authors:
- *   <THE GTK VERSION AUTHOR> (GTK+ version)
- *   "YOUR NAME" <YOUR EMAIL> (Qt Quick port)
+ * Copyright (C) 2016 Toncu Stefan <stefan.toncu29@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +15,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
 .pragma library
 .import QtQuick 2.0 as Quick
 .import GCompris 1.0 as GCompris
@@ -60,7 +57,7 @@ var redo = []
 var aux = ["1","2","3","4","5"]
 
 var userFile = "file://" + GCompris.ApplicationInfo.getSharedWritablePath()
-        + "/STEFAN/" + "levels-user.json"
+        + "/paint/" + "levels-user.json"
 
 var dataset = null
 
@@ -72,6 +69,7 @@ var connectedPoints = []
 function start(items_) {
     items = items_
     currentLevel = 0
+    items.background.started = true
     initLevel()
 }
 
@@ -82,13 +80,6 @@ function initLevel() {
     dataset = null
     points = []
     connectedPoints = []
-
-    //load saved paintings from file
-//    parseImageSaved()
-    dataset = items.parser.parseFromUrl(userFile);
-    items.gridView2.model = dataset
-
-    items.bar.level = currentLevel + 1
 
     undo = []
     redo = []
@@ -123,13 +114,19 @@ function initLevel() {
         // reset the flag to false
         items.widthHeightChanged = false
     }
+
+    //load saved paintings from file
+    parseImageSaved()
+    items.gridView2.model = dataset
 }
 
 // parse the content of the paintings saved by the user
 function parseImageSaved() {
+    print("userFile: ",userFile)
     dataset = items.parser.parseFromUrl(userFile);
     if (dataset == null) {
-        console.error("ERROR! cannot continue")
+        console.error("ERROR! dataset = []")
+        dataset = []
         return;
     }
 }
